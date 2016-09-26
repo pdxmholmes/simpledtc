@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDtc", "src\SimpleDtc\SimpleDtc.csproj", "{8F5184D2-4D9E-4E64-8BAA-E3648787408A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDtc.Core", "src\SimpleDtc.Core\SimpleDtc.Core.csproj", "{A6450164-0B72-4D33-A511-E52E584A7A25}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F5184D2-4D9E-4E64-8BAA-E3648787408A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5184D2-4D9E-4E64-8BAA-E3648787408A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5184D2-4D9E-4E64-8BAA-E3648787408A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5184D2-4D9E-4E64-8BAA-E3648787408A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6450164-0B72-4D33-A511-E52E584A7A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6450164-0B72-4D33-A511-E52E584A7A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6450164-0B72-4D33-A511-E52E584A7A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6450164-0B72-4D33-A511-E52E584A7A25}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,29 @@
+﻿<Window x:Class="SimpleDtc.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core"
+        xmlns:views="clr-namespace:SimpleDtc.Views"
+        Title="SimpleDtc" Height="425" Width="750">
+    <DockPanel LastChildFill="True"> 
+        <TabControl>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <core:FontImage Glyph="{DynamicResource DatabaseIcon}" Width="24" Height="24" />
+                        <TextBlock Text="Data Cartridge" VerticalAlignment="Center" Margin="3,0,0,0" FontSize="14" />
+                    </StackPanel>
+                </TabItem.Header>
+                <core:ViewPlaceholder ViewType="views:DataCartridgeView" />
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <core:FontImage Glyph="{DynamicResource FighterJetIcon}" Width="24" Height="24" />
+                        <TextBlock Text="Target Packages" VerticalAlignment="Center" Margin="3,0,0,0" FontSize="14" />
+                    </StackPanel>
+                </TabItem.Header>
+                <core:ViewPlaceholder ViewType="views:TargetPackagesView" />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="SimpleDtc.Views.DataCartridgeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewModels="clr-namespace:SimpleDtc.ViewModels"
+             xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core">
+    <DockPanel LastChildFill="True">
+        <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding AvailableProfiles}" SelectedItem="{Binding SelectedProfile}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+
+            <ListBox Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                     ItemsSource="{Binding PointTypes}" SelectedValue="{Binding SelectedPointType}" SelectedValuePath="Type">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="viewModels:PointType">
+                        <StackPanel Orientation="Horizontal">
+                            <core:FontImage Width="16" Height="16" Margin="0,0,5,0">
+                                <core:FontImage.Style>
+                                    <Style TargetType="core:FontImage">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Type}" Value="{x:Static core:SteerpointType.Target}">
+                                                <Setter Property="Glyph" Value="{DynamicResource CircleIcon}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Type}" Value="{x:Static core:SteerpointType.Threat}">
+                                                <Setter Property="Glyph" Value="{DynamicResource WarningIcon}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding Type}" Value="{x:Static core:SteerpointType.Weapon}">
+                                                <Setter Property="Glyph" Value="{DynamicResource RocketIcon}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </core:FontImage.Style>
+                            </core:FontImage>
+                            <TextBlock Text="{Binding Header}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch" ResizeDirection="Columns"
+                          ResizeBehavior="PreviousAndNext" />
+            <ListView Grid.Column="2" ItemsSource="{Binding SelectedPoints}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="35" DisplayMemberBinding="{Binding Index}" />
+                        <GridViewColumn Width="240" Header="Note" DisplayMemberBinding="{Binding Note}" />
+                        <GridViewColumn Width="85" Header="X" DisplayMemberBinding="{Binding X}" />
+                        <GridViewColumn Width="85" Header="Y" DisplayMemberBinding="{Binding Y}" />
+                        <GridViewColumn Width="85" Header="Z" DisplayMemberBinding="{Binding Z}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+    </DockPanel>
+</UserControl>

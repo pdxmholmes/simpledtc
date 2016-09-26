@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="SimpleDtc.Views.TargetPackagesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SimpleDtc.Views"
+             xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+    <DockPanel LastChildFill="True">
+        <DockPanel.Resources>
+            <core:BindingProxy x:Key="vmProxy" Data="{Binding}" />
+            <ContextMenu x:Key="ImportMenu"
+                         DataContext="{Binding Data, Source={StaticResource vmProxy}}">
+                <MenuItem Header="From Clipboard" Command="{Binding ImportTargetPackageFromClipboard}" />
+                <MenuItem Header="From File..." Command="{Binding ImportTargetPackageFromFile}" />
+            </ContextMenu>
+            <ContextMenu x:Key="ExportMenu"
+                         DataContext="{Binding Data, Source={StaticResource vmProxy}}">
+                <MenuItem Header="To Clipboard" Command="{Binding ExportTargetPackageToClipboard}" />
+                <MenuItem Header="To File..." Command="{Binding ExportTargetPackageToFile}" />
+            </ContextMenu>
+        </DockPanel.Resources>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <core:MenuButton x:Name="ImportTargetPackageButton" ToolTip="Import Target Package"
+                                 ContextMenu="{StaticResource ImportMenu}">
+                    <core:FontImage Glyph="{DynamicResource UploadIcon}" Width="24" Height="24" />
+                </core:MenuButton>
+                <core:MenuButton x:Name="ExportTargetPackageButton" ToolTip="Export Target Package"
+                                 ContextMenu="{StaticResource ExportMenu}">
+                    <core:FontImage Glyph="{DynamicResource DownloadIcon}" Width="24" Height="24" />
+                </core:MenuButton>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+
+            <TreeView Grid.Column="0" ItemsSource="{Binding PackageFolders}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Packages}">
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <core:FontImage Glyph="{DynamicResource RocketIcon}" Width="20" Height="20" />
+                                    <TextBlock Text="{Binding Name}" FontSize="14" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <core:FontImage Glyph="{DynamicResource FolderIcon}" Width="20" Height="20" />
+                            <TextBlock Text="{Binding Name}" FontSize="14" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Right" VerticalAlignment="Stretch" ResizeDirection="Columns"
+                          ResizeBehavior="PreviousAndNext" />
+            <GroupBox Grid.Column="2" Header="Target Package" />
+        </Grid>
+    </DockPanel>
+</UserControl>

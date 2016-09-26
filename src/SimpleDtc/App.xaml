@@ -1,0 +1,14 @@
+﻿<core:CoreApplication x:Class="SimpleDtc.App"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core">
+    <core:CoreApplication.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/SimpleDtc.Core;component/Fonts/Fonts.xaml" />
+                <ResourceDictionary Source="/SimpleDtc.Core;component/Fonts/Icons.xaml" />
+                <ResourceDictionary Source="/Themes/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </core:CoreApplication.Resources>
+</core:CoreApplication>
