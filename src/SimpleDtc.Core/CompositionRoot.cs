@@ -34,9 +34,10 @@ namespace SimpleDtc {
     public class CompositionRoot : ICompositionRoot {
         public void Compose (IServiceRegistry serviceRegistry) {
             serviceRegistry.Register<IEventAggregator, EventAggregator> (new PerContainerLifetime ());
-            serviceRegistry.Register<IDataStoreService, DataStoreService> (new PerContainerLifetime ());
+            serviceRegistry.Register<IDirectoryService, DirectoryService> (new PerContainerLifetime ());
             serviceRegistry.Register<IOptionsService, OptionsService> (new PerContainerLifetime ());
             serviceRegistry.Register<IFalconService, FalconService> (new PerContainerLifetime ());
+            serviceRegistry.Register<IPackagesService, PackagesService> (new PerContainerLifetime ());
         }
     }
 }

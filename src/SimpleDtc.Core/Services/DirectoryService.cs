@@ -26,38 +26,22 @@
 
 #endregion
 
-using System;
 using System.IO;
 
 namespace SimpleDtc.Core.Services {
-    public interface IDataStoreService {
-        string StoragePath { get; }
+    public interface IDirectoryService {
+        void EnsureFolderExists (string path);
     }
 
-    internal class DataStoreService : IDataStoreService {
-        private static readonly string _StoragePath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "SimpleDtc");
-        private readonly object _pathCheckLock = new object ();
-        private volatile bool _storageChecked;
+    internal class DirectoryService : IDirectoryService {
+        private readonly object _checkLock = new object ();
 
-        public string StoragePath {
-            get {
-                if (_storageChecked) {
-                    return _StoragePath;
+        public void EnsureFolderExists (string path) {
+            path = Path.GetFullPath (path);
+            lock (_checkLock) {
+                if (!Directory.Exists (path)) {
+                    Directory.CreateDirectory (path);
                 }
-
-                lock (_pathCheckLock) {
-                    if (_storageChecked) {
-                        return _StoragePath;
-                    }
-
-                    if (!Directory.Exists (_StoragePath)) {
-                        Directory.CreateDirectory (_StoragePath);
-                    }
-
-                    _storageChecked = true;
-                }
-
-                return _StoragePath;
             }
         }
     }

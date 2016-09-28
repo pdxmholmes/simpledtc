@@ -27,6 +27,7 @@
 #endregion
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Markup;
@@ -88,3 +89,5 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition ("https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core", "SimpleDtc.Core.Converters")]
 [assembly: XmlnsDefinition ("https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core", "SimpleDtc.Core.Behaviors")]
 [assembly: XmlnsDefinition ("https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core", "SimpleDtc.Core.Data")]
+
+[assembly: InternalsVisibleTo ("SimpleDtc.Core.Specs")]

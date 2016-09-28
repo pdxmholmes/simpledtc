@@ -133,9 +133,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="PropertyStateBase.cs" />
-    <Compile Include="Services\DataStoreService.cs" />
+    <Compile Include="Services\DirectoryService.cs" />
     <Compile Include="Services\FalconService.cs" />
     <Compile Include="Services\OptionsService.cs" />
+    <Compile Include="Services\PackagesService.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

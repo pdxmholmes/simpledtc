@@ -42,14 +42,17 @@ namespace SimpleDtc.Core.Services {
     }
 
     internal class OptionsService : IOptionsService {
+        private static readonly string _OptionsRootPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "SimpleDtc");
         private readonly IEventAggregator _eventAggregator;
         private readonly string _optionsPath;
         private readonly object _writeLock = new object ();
         private Options _options;
 
-        public OptionsService (IEventAggregator eventAggregator, IDataStoreService dataStoreService) {
-            _eventAggregator = eventAggregator;
-            _optionsPath = Path.Combine (dataStoreService.StoragePath, "options.json");
+        public OptionsService (IEventAggregator eventAggregator, IDirectoryService directoryService) {
+            _eventAggregator = eventAggregator;            
+
+            directoryService.EnsureFolderExists (_OptionsRootPath);
+            _optionsPath = Path.Combine(_OptionsRootPath, "options.json");
         }
 
         public Options Get () {
