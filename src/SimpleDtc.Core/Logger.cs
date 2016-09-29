@@ -26,20 +26,45 @@
 
 #endregion
 
-using LightInject;
-using Microsoft.Practices.Prism.PubSubEvents;
-using SimpleDtc.Core;
-using SimpleDtc.Core.Services;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
-namespace SimpleDtc {
-    public class CompositionRoot : ICompositionRoot {
-        public void Compose (IServiceRegistry serviceRegistry) {
-            serviceRegistry.Register<IEventAggregator, EventAggregator> (new PerContainerLifetime ());
-            serviceRegistry.Register<Log> (new PerContainerLifetime ());
-            serviceRegistry.Register<IDirectoryService, DirectoryService> (new PerContainerLifetime ());
-            serviceRegistry.Register<IOptionsService, OptionsService> (new PerContainerLifetime ());
-            serviceRegistry.Register<IFalconService, FalconService> (new PerContainerLifetime ());
-            serviceRegistry.Register<IPackagesService, PackagesService> (new PerContainerLifetime ());
+namespace SimpleDtc.Core {
+    public class Log {
+        private const string LogLayout = "[${date:HH\\:MM\\:ss}] ${level:uppercase=true}: ${message}";
+
+        public Log () {
+            Initialize ();
+        }
+
+        private void Initialize () {
+            var config = new LoggingConfiguration ();
+
+            var consoleTarget = new ColoredConsoleTarget ();
+            config.AddTarget ("console", consoleTarget);
+
+            var fileTarget = new FileTarget ();
+            config.AddTarget ("file", fileTarget);
+
+            consoleTarget.Layout = LogLayout;
+            fileTarget.FileName = @"${basedir}\${logger}.log";
+            fileTarget.Layout = LogLayout;
+            fileTarget.ArchiveAboveSize = 1024 * 1024;
+
+#if DEBUG
+            fileTarget.MaxArchiveFiles = 5;
+#else
+            fileTarget.MaxArchiveFiles = 1;
+#endif
+
+            var rule = new LoggingRule ("*", LogLevel.Debug, consoleTarget);
+            config.LoggingRules.Add (rule);
+
+            rule = new LoggingRule ("*", LogLevel.Debug, fileTarget);
+            config.LoggingRules.Add (rule);
+
+            LogManager.Configuration = config;
         }
     }
 }

@@ -30,8 +30,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NLog;
 using NUnit.Framework;
 using SimpleDtc.Core.Data;
 using SimpleDtc.Core.Services;
@@ -42,9 +44,9 @@ namespace SimpleDtc.Core.Specs.Services {
     public class PackageServiceSteps {
         private static string _path;
         private IEnumerable<string> _folders;
-        private PackagesService _packagesService;
-        private IEnumerable<string> _packages;
         private TargetPackage _package;
+        private IEnumerable<string> _packages;
+        private PackagesService _packagesService;
 
         [BeforeFeature ("packagesService")]
         public static void BeforeFeature () {
@@ -58,7 +60,8 @@ namespace SimpleDtc.Core.Specs.Services {
 
         [Given (@"a package service")]
         public void GiveAPackageService () {
-            _packagesService = new PackagesService (_path, new DirectoryService ());
+            var logger = new Mock<ILogger> ();
+            _packagesService = new PackagesService (_path, new DirectoryService (), logger.Object);
         }
 
         [Given (@"a folder called '(.*)'")]
@@ -95,15 +98,21 @@ namespace SimpleDtc.Core.Specs.Services {
             Array.ForEach (names, n => Assert.IsTrue (_packages.Any (f => String.Equals (n, f, StringComparison.InvariantCultureIgnoreCase))));
         }
 
-        [When(@"package '(.*)' is queried from '(.*)'")]
-        public void WhenPackageIsQueriedFrom(string p0, string p1) {
+        [When (@"package '(.*)' is queried from '(.*)'")]
+        public void WhenPackageIsQueriedFrom (string p0, string p1) {
             _package = _packagesService.GetPackage (p1, p0);
         }
 
-        [Then(@"a package is returned")]
-        public void ThenAPackageIsReturned() {
+        [Then (@"a package is returned")]
+        public void ThenAPackageIsReturned () {
             Assert.IsNotNull (_package);
         }
+
+        [Then (@"package is null")]
+        public void ThenPackageIsNull () {
+            Assert.IsNull (_package);
+        }
+
 
         [StepArgumentTransformation (@"contains '(.*)'")]
         public string[] CommaSeperatedList (string list) {
@@ -115,7 +124,6 @@ namespace SimpleDtc.Core.Specs.Services {
                 Name = name,
                 Creator = "test_user",
                 Campaign = "KTO",
-
                 TargetSteerpoints = new List<Steerpoint> (),
                 ThreatSteerpoints = new List<Steerpoint> (),
                 WeaponTargetPoints = new List<Steerpoint> ()

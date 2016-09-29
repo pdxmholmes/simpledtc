@@ -28,6 +28,7 @@
 
 using System.Windows;
 using LightInject;
+using NLog;
 
 namespace SimpleDtc.Core {
     public abstract class CoreApplication : Application {
@@ -41,6 +42,9 @@ namespace SimpleDtc.Core {
 
             _container.RegisterAssembly (typeof (CoreApplication).Assembly);
             _container.RegisterInstance (_container);
+
+            _container.GetInstance<Log> ();
+            _container.RegisterInstance (LogManager.GetLogger ("sdtc"));
         }
 
         public IServiceContainer Container => _container;

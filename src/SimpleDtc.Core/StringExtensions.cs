@@ -26,20 +26,20 @@
 
 #endregion
 
-using LightInject;
-using Microsoft.Practices.Prism.PubSubEvents;
-using SimpleDtc.Core;
-using SimpleDtc.Core.Services;
+using System;
+using System.IO;
 
-namespace SimpleDtc {
-    public class CompositionRoot : ICompositionRoot {
-        public void Compose (IServiceRegistry serviceRegistry) {
-            serviceRegistry.Register<IEventAggregator, EventAggregator> (new PerContainerLifetime ());
-            serviceRegistry.Register<Log> (new PerContainerLifetime ());
-            serviceRegistry.Register<IDirectoryService, DirectoryService> (new PerContainerLifetime ());
-            serviceRegistry.Register<IOptionsService, OptionsService> (new PerContainerLifetime ());
-            serviceRegistry.Register<IFalconService, FalconService> (new PerContainerLifetime ());
-            serviceRegistry.Register<IPackagesService, PackagesService> (new PerContainerLifetime ());
+namespace SimpleDtc.Core {
+    public static class StringExtensions {
+        public static string StripInvalidPathCharacters (this string path) {
+            if (String.IsNullOrWhiteSpace (path)) {
+                return path;
+            }
+
+            var finalPath = path;
+            Array.ForEach (Path.GetInvalidFileNameChars (), c => finalPath = finalPath.Replace (c.ToString (), ""));
+            Array.ForEach (Path.GetInvalidPathChars (), c => finalPath = finalPath.Replace (c.ToString (), ""));
+            return finalPath;
         }
     }
 }

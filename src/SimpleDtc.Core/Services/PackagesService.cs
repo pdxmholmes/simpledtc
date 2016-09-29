@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NLog;
 using SimpleDtc.Core.Data;
 
 namespace SimpleDtc.Core.Services {
@@ -39,19 +40,25 @@ namespace SimpleDtc.Core.Services {
         IEnumerable<string> GetFolders ();
         IEnumerable<string> GetPackages (string folder);
         TargetPackage GetPackage (string folder, string name);
+        TargetPackage Import (string json);
     }
 
     internal class PackagesService : IPackagesService {
         private static readonly string _PackagesRootPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), @"SimpleDtc\Target Packages");
+        private readonly IDirectoryService _directoryService;
+        private readonly ILogger _logger;
         private readonly string _rootPath;
         private readonly object _writeLock = new object ();
 
-        public PackagesService (IDirectoryService directoryService)
-            : this (null, directoryService) {
+        public PackagesService (IDirectoryService directoryService, ILogger logger)
+            : this (null, directoryService, logger) {
         }
 
-        internal PackagesService (string rootPath, IDirectoryService directoryService) {
+        internal PackagesService (string rootPath, IDirectoryService directoryService, ILogger logger) {
             _rootPath = rootPath ?? _PackagesRootPath;
+            _directoryService = directoryService;
+            _logger = logger;
+
             directoryService.EnsureFolderExists (_rootPath);
         }
 
@@ -76,7 +83,32 @@ namespace SimpleDtc.Core.Services {
                     ContractResolver = new CamelCasePropertyNamesContractResolver ()
                 });
             }
-            catch {
+            catch (Exception ex) {
+                _logger.Error (ex, "Could not load target package");
+                return null;
+            }
+        }
+
+        public TargetPackage Import (string json) {
+            try {
+                var package = JsonConvert.DeserializeObject<TargetPackage> (json, new JsonSerializerSettings {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver ()
+                });
+
+                var path = Path.Combine (_rootPath, package.Campaign.StripInvalidPathCharacters ());
+                _directoryService.EnsureFolderExists (path);
+
+                var file = $"{package.Name.StripInvalidPathCharacters ()}.tpkg";
+                lock (_writeLock) {
+                    File.WriteAllText (Path.Combine (path, file), JsonConvert.SerializeObject (package, Formatting.Indented, new JsonSerializerSettings {
+                        ContractResolver = new CamelCasePropertyNamesContractResolver ()
+                    }));
+                }
+
+                return package;
+            }
+            catch (Exception ex) {
+                _logger.Error (ex, "Could not import target package");
                 return null;
             }
         }
