@@ -29,7 +29,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
@@ -40,10 +42,12 @@ namespace SimpleDtc.Core.Services {
         IEnumerable<string> GetFolders ();
         IEnumerable<string> GetPackages (string folder);
         TargetPackage GetPackage (string folder, string name);
-        TargetPackage Import (string json);
+        TargetPackage Import (string data);
+        string Export (TargetPackage package, bool compress);
     }
 
     internal class PackagesService : IPackagesService {
+        private static readonly string _CompressedStringHeader = "tpkg:";
         private static readonly string _PackagesRootPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.MyDocuments), @"SimpleDtc\Target Packages");
         private readonly IDirectoryService _directoryService;
         private readonly ILogger _logger;
@@ -89,8 +93,13 @@ namespace SimpleDtc.Core.Services {
             }
         }
 
-        public TargetPackage Import (string json) {
+        public TargetPackage Import (string data) {
             try {
+                if (String.IsNullOrWhiteSpace (data)) {
+                    throw new ArgumentException ("data cannot be null or empty");
+                }
+
+                var json = Decompress (data);
                 var package = JsonConvert.DeserializeObject<TargetPackage> (json, new JsonSerializerSettings {
                     ContractResolver = new CamelCasePropertyNamesContractResolver ()
                 });
@@ -110,6 +119,59 @@ namespace SimpleDtc.Core.Services {
             catch (Exception ex) {
                 _logger.Error (ex, "Could not import target package");
                 return null;
+            }
+        }
+
+        public string Export (TargetPackage package, bool compress) {
+            try {
+                var json = JsonConvert.SerializeObject (package, compress ? Formatting.None : Formatting.Indented, new JsonSerializerSettings {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver ()
+                });
+
+                if (!compress) {
+                    return json;
+                }
+
+                var buffer = Encoding.UTF8.GetBytes (json);
+                var memoryStream = new MemoryStream ();
+                using (var compressionStream = new GZipStream (memoryStream, CompressionMode.Compress, true)) {
+                    compressionStream.Write (buffer, 0, buffer.Length);
+                }
+
+                memoryStream.Position = 0;
+                var compressedData = new byte[memoryStream.Length];
+                memoryStream.Read (compressedData, 0, compressedData.Length);
+
+                var compressedBuffer = new byte[compressedData.Length + 4];
+                Buffer.BlockCopy (compressedData, 0, compressedBuffer, 4, compressedData.Length);
+                Buffer.BlockCopy (BitConverter.GetBytes (buffer.Length), 0, compressedBuffer, 0, 4);
+                return $"{_CompressedStringHeader}{Convert.ToBase64String (compressedBuffer)}";
+            }
+            catch (Exception ex) {
+                _logger.Error (ex, "Could not export target package");
+                return String.Empty;
+            }
+        }
+
+        private static string Decompress (string data) {
+            if (!data.StartsWith (_CompressedStringHeader)) {
+                return data;
+            }
+
+            data = data.Substring (_CompressedStringHeader.Length);
+            var compressedBuffer = Convert.FromBase64String (data);
+            using (var memoryStream = new MemoryStream ()) {
+                var len = BitConverter.ToInt32 (compressedBuffer, 0);
+                memoryStream.Write (compressedBuffer, 4, compressedBuffer.Length - 4);
+
+                var buffer = new byte[len];
+                memoryStream.Position = 0;
+
+                using (var compressionStream = new GZipStream (memoryStream, CompressionMode.Decompress)) {
+                    compressionStream.Read (buffer, 0, buffer.Length);
+                }
+
+                return Encoding.UTF8.GetString (buffer);
             }
         }
     }
