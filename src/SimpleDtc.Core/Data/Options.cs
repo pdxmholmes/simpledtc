@@ -30,15 +30,19 @@ using System;
 
 namespace SimpleDtc.Core.Data {
     public class Options : ICloneable {
-        public static readonly Options Default = new Options ();
+        public static readonly Options Default = new Options {
+            WatchForDtcUpdates = true
+        };
 
         public string FalconRoot { get; set; }
         public string SelectedProfile { get; set; }
+        public bool WatchForDtcUpdates { get; set; }
 
         public object Clone () {
             return new Options {
                 FalconRoot = FalconRoot,
-                SelectedProfile = SelectedProfile
+                SelectedProfile = SelectedProfile,
+                WatchForDtcUpdates = WatchForDtcUpdates
             };
         }
     }

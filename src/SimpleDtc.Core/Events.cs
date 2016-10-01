@@ -37,4 +37,7 @@ namespace SimpleDtc.Core {
         public bool HasFalconPathChanged { get; set; }
         public Options Options { get; set; }
     }
+
+    public class ProfileUpdated : PubSubEvent<string> {        
+    }
 }

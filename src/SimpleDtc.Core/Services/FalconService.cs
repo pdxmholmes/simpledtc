@@ -26,21 +26,31 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using Microsoft.Practices.Prism.PubSubEvents;
 using SimpleDtc.Core.Data;
 
 namespace SimpleDtc.Core.Services {
     public interface IFalconService {
         IEnumerable<string> AvailableProfiles { get; }
         DataCartridge LoadDtc (string profileName);
+        void WatchDtc (string profileName);
+        void StopWatching ();
     }
 
     internal class FalconService : IFalconService {
+        private readonly IEventAggregator _eventAggregator;
         private readonly IOptionsService _optionsService;
+        private IObservable<EventPattern<FileSystemEventArgs>> _observable;
+        private FileSystemWatcher _watcher;
 
-        public FalconService (IOptionsService optionsService) {
+        public FalconService (IEventAggregator eventAggregator, IOptionsService optionsService) {
+            _eventAggregator = eventAggregator;
             _optionsService = optionsService;
         }
 
@@ -64,6 +74,37 @@ namespace SimpleDtc.Core.Services {
 
             var path = Path.Combine (options.FalconRoot, $"User\\Config\\{profileName}.ini");
             return !File.Exists (path) ? null : new DataCartridgeParser ().Parse (path);
+        }
+
+        public void WatchDtc (string profileName) {
+            if (String.IsNullOrWhiteSpace (profileName)) {
+                return;
+            }
+
+            var options = _optionsService.Get ();
+            if (options.FalconRoot == null) {
+                return;
+            }
+
+            StopWatching ();
+            _watcher = new FileSystemWatcher (Path.Combine (options.FalconRoot, @"User\Config"), $"{profileName}.ini") { NotifyFilter = NotifyFilters.LastWrite };
+
+            _observable = Observable
+                .FromEventPattern<FileSystemEventHandler, FileSystemEventArgs> (h => _watcher.Changed += h, h => _watcher.Changed -= h)
+                .Throttle (TimeSpan.FromMilliseconds (500));
+
+            _observable.Subscribe (ep => { _eventAggregator.GetEvent<ProfileUpdated> ().Publish (profileName); });
+            _watcher.EnableRaisingEvents = true;
+        }
+
+        public void StopWatching () {
+            if (_watcher != null) {
+                _watcher.EnableRaisingEvents = false;
+                _watcher.Dispose ();
+            }
+
+            _observable = null;
+            _watcher = null;
         }
     }
 }

@@ -40,6 +40,7 @@ namespace SimpleDtc.Core {
         private readonly Dictionary<string, List<Action>> _stateHandlers = new Dictionary<string, List<Action>> ();
 
         protected PropertyStateBase () {
+            IsLoading = true;
             CommandManager.RequerySuggested += (o, e) => { _commands.Values.ToList ().ForEach (c => c.RaiseCanExecuteChanged ()); };
 
             PropertyChanged += (o, e) => {
@@ -48,6 +49,8 @@ namespace SimpleDtc.Core {
                 }
             };
         }
+
+        protected bool IsLoading { get; set; }
 
         protected void WhenStateUpdated<TProperty> (Expression<Func<TProperty>> property, Action action) {
             var name = PropertySupport.ExtractPropertyName (property);

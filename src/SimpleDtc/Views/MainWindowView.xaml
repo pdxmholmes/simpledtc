@@ -4,7 +4,9 @@
         xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core"
         xmlns:views="clr-namespace:SimpleDtc.Views"
         Title="SimpleDtc" Height="425" Width="750">
-    <DockPanel LastChildFill="True"> 
+    <DockPanel LastChildFill="True">
+        <StatusBar DockPanel.Dock="Bottom">
+        </StatusBar>
         <TabControl>
             <TabItem>
                 <TabItem.Header>

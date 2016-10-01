@@ -26,8 +26,10 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using Microsoft.Practices.Prism.PubSubEvents;
 using SimpleDtc.Core;
 using SimpleDtc.Core.Data;
@@ -59,19 +61,27 @@ namespace SimpleDtc.ViewModels {
         private IEnumerable<Steerpoint> _selectedPoints;
         private SteerpointType _selectedPointType;
         private string _selectedProfile;
+        private bool _watchDtc;
 
         public DataCartridgeViewModel (IEventAggregator eventAggregator, IOptionsService optionsService, IFalconService falconService) {
             _optionsService = optionsService;
             _falconService = falconService;
 
             eventAggregator.GetEvent<OptionsUpdated> ().Subscribe (OnOptionsUpdated);
+            eventAggregator.GetEvent<ProfileUpdated> ().Subscribe (OnProfileUpdated);
+
             _availableProfiles = new List<string> (falconService.AvailableProfiles);
 
-            WhenStateUpdated (() => SelectedProfile, OnProfileUpdated);
+            WhenStateUpdated (() => SelectedProfile, OnSelectedProfileUpdated);
             WhenStateUpdated (() => SelectedPointType, OnSelectedPointTypeUpdated);
+            WhenStateUpdated (() => WatchDtc, OnWatchDtcUpdated);
 
-            SelectedProfile = optionsService.Get ().SelectedProfile;
+            var options = optionsService.Get ();
+            SelectedProfile = options.SelectedProfile;
             SelectedPointType = SteerpointType.Target;
+            WatchDtc = options.WatchForDtcUpdates;
+
+            IsLoading = false;
         }
 
         public IEnumerable<PointType> PointTypes => _PointTypes;
@@ -86,6 +96,15 @@ namespace SimpleDtc.ViewModels {
             set { SetProperty (ref _selectedPoints, value); }
         }
 
+        public bool WatchDtc {
+            get { return _watchDtc; }
+            set { SetProperty (ref _watchDtc, value); }
+        }
+
+        public ICommand QuickExport => GetCommand ("QuickExport", ExecuteQuickExport, () => SelectedProfile != null);
+        public ICommand CreateTargetPackage => GetCommand ("CreateTargetPackage", ExecuteCreateTargetPackage, () => SelectedProfile != null);
+        public ICommand ToggleWatchDtc => GetCommand ("ToggleWatchDtc", () => WatchDtc = !WatchDtc);
+
         public string SelectedProfile {
             get { return _selectedProfile; }
             set { SetProperty (ref _selectedProfile, value); }
@@ -96,10 +115,12 @@ namespace SimpleDtc.ViewModels {
             set { SetProperty (ref _availableProfiles, value?.ToList ()); }
         }
 
-        private void OnProfileUpdated () {
-            var options = _optionsService.Get ();
-            options.SelectedProfile = SelectedProfile;
-            _optionsService.Update (options);
+        private void OnSelectedProfileUpdated () {
+            if (!IsLoading) {
+                var options = _optionsService.Get ();
+                options.SelectedProfile = SelectedProfile;
+                _optionsService.Update (options);
+            }
 
             _loadedCartridge = _falconService.LoadDtc (SelectedProfile);
             OnSelectedPointTypeUpdated ();
@@ -128,6 +149,36 @@ namespace SimpleDtc.ViewModels {
                     SelectedPoints = _loadedCartridge?.WeaponTargetPoints;
                     break;
             }
+        }
+
+        private void OnProfileUpdated (string profileName) {
+            if (SelectedProfile == null || !String.Equals (SelectedProfile, profileName, StringComparison.InvariantCultureIgnoreCase)) {
+                return;
+            }
+
+            _loadedCartridge = _falconService.LoadDtc (SelectedProfile);
+            OnSelectedPointTypeUpdated ();
+        }
+
+        private void OnWatchDtcUpdated () {
+            if (!IsLoading) {
+                var options = _optionsService.Get ();
+                options.WatchForDtcUpdates = WatchDtc;
+                _optionsService.Update (options);
+            }
+
+            if (WatchDtc) {
+                _falconService.WatchDtc (SelectedProfile);
+            }
+            else {
+                _falconService.StopWatching ();
+            }
+        }
+
+        private void ExecuteQuickExport () {
+        }
+
+        private void ExecuteCreateTargetPackage () {
         }
     }
 }

@@ -42,9 +42,6 @@ namespace SimpleDtc.Core {
 
             _container.RegisterAssembly (typeof (CoreApplication).Assembly);
             _container.RegisterInstance (_container);
-
-            _container.GetInstance<Log> ();
-            _container.RegisterInstance (LogManager.GetLogger ("sdtc"));
         }
 
         public IServiceContainer Container => _container;

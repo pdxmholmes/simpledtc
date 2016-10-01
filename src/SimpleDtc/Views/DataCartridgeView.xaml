@@ -4,7 +4,44 @@
              xmlns:viewModels="clr-namespace:SimpleDtc.ViewModels"
              xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core">
     <DockPanel LastChildFill="True">
-        <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding AvailableProfiles}" SelectedItem="{Binding SelectedProfile}" />
+        <DockPanel.Resources>
+            <core:BindingProxy x:Key="vmProxy" Data="{Binding}" />
+            <ContextMenu x:Key="TargetPackageMenu"
+                         DataContext="{Binding Data, Source={StaticResource vmProxy}}">
+                <MenuItem Header="Quick Export..." Command="{Binding QuickExport}" />
+                <MenuItem Header="Create Target Package..." Command="{Binding CreateTargetPackage}" />
+            </ContextMenu>
+        </DockPanel.Resources>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <core:MenuButton ToolTip="Target Package Actions"
+                                 ContextMenu="{StaticResource TargetPackageMenu}">
+                    <core:FontImage Glyph="{DynamicResource RocketIcon}" Width="24" Height="24" />
+                </core:MenuButton>
+                
+                <Separator Margin="5,0,5,0" />
+                
+                <TextBlock Text="Profile" Margin="0,0,4,0" VerticalAlignment="Center" />
+                <ComboBox ItemsSource="{Binding AvailableProfiles}" SelectedItem="{Binding SelectedProfile}" Width="175" />
+                
+                <Separator Margin="5,0,5,0" />
+                
+                <Button ToolTip="Watch For DTC Changes" Command="{Binding ToggleWatchDtc}">
+                    <core:FontImage Glyph="{DynamicResource CircleIcon}" Width="24" Height="24">
+                        <core:FontImage.Style>
+                            <Style TargetType="core:FontImage">
+                                <Setter Property="Brush" Value="DarkGreen" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WatchDtc}" Value="False">
+                                        <Setter Property="Brush" Value="DarkRed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </core:FontImage.Style>
+                    </core:FontImage>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
