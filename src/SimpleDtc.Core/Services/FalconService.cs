@@ -32,6 +32,8 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using IniParser;
+using IniParser.Model;
 using Microsoft.Practices.Prism.PubSubEvents;
 using SimpleDtc.Core.Data;
 
@@ -39,6 +41,7 @@ namespace SimpleDtc.Core.Services {
     public interface IFalconService {
         IEnumerable<string> AvailableProfiles { get; }
         DataCartridge LoadDtc (string profileName);
+        void MergeTargetPackage (string profileName, TargetPackage package);
         void WatchDtc (string profileName);
         void StopWatching ();
     }
@@ -74,6 +77,33 @@ namespace SimpleDtc.Core.Services {
 
             var path = Path.Combine (options.FalconRoot, $"User\\Config\\{profileName}.ini");
             return !File.Exists (path) ? null : new DataCartridgeParser ().Parse (path);
+        }
+
+        public void MergeTargetPackage (string profileName, TargetPackage package) {
+            var options = _optionsService.Get ();
+            if (options.FalconRoot == null) {
+                return;
+            }
+
+            var path = Path.Combine (options.FalconRoot, $"User\\Config\\{profileName}.ini");
+            var parser = new FileIniDataParser ();
+            var data = parser.ReadFile (path);
+
+            var newData = new KeyDataCollection ();
+            foreach (var point in package.TargetSteerpoints) {
+                newData[$"target_{point.Index}"] = point.ToString ();
+            }
+
+            foreach (var point in package.ThreatSteerpoints) {
+                newData[$"ppt_{point.Index}"] = point.ToString ();
+            }
+
+            foreach (var point in package.WeaponTargetPoints) {
+                newData[$"wpntarget_{point.Index - 1}"] = point.ToString ();
+            }
+
+            data["STPT"].Merge (newData);
+            parser.WriteFile (path, data);
         }
 
         public void WatchDtc (string profileName) {

@@ -104,6 +104,10 @@ namespace SimpleDtc.Core.Services {
                     ContractResolver = new CamelCasePropertyNamesContractResolver ()
                 });
 
+                if (package.Campaign == null) {
+                    package.Campaign = "KTO";
+                }
+
                 var path = Path.Combine (_rootPath, package.Campaign.StripInvalidPathCharacters ());
                 _directoryService.EnsureFolderExists (path);
 

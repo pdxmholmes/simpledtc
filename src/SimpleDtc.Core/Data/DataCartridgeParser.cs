@@ -70,7 +70,7 @@ namespace SimpleDtc.Core.Data {
                         int idx;
                         if (Int32.TryParse (m.Match.Groups[1].Value, out idx)) {
                             return new {
-                                Index = idx,
+                                Index = idx + 1,
                                 Value = m.Value
                             };
                         }

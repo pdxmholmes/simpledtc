@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Microsoft.Practices.Prism.PubSubEvents;
 using SimpleDtc.Core;
@@ -39,9 +40,18 @@ namespace SimpleDtc.ViewModels {
     public interface IDataCartridgeViewModel {
         string SelectedProfile { get; set; }
         IEnumerable<string> AvailableProfiles { get; }
+        IEnumerable<PointType> PointTypes { get; }
+        SteerpointType SelectedPointType { get; }
+        IEnumerable<Steerpoint> SelectedPoints { get; }
+        bool WatchDtc { get; }
+
+        ICommand QuickExport { get; }
+        ICommand QuickImport { get; }
+        ICommand CreateTargetPackage { get; }
+        ICommand ToggleWatchDtc { get; }
     }
 
-    internal class PointType {
+    public class PointType {
         public string Header { get; set; }
         public SteerpointType Type { get; set; }
     }
@@ -53,8 +63,10 @@ namespace SimpleDtc.ViewModels {
             new PointType { Header = "Weapon Target Points", Type = SteerpointType.Weapon }
         };
 
+        private readonly IEventAggregator _eventAggregator;
         private readonly IFalconService _falconService;
         private readonly IOptionsService _optionsService;
+        private readonly IPackagesService _packagesService;
 
         private List<string> _availableProfiles;
         private DataCartridge _loadedCartridge;
@@ -63,9 +75,11 @@ namespace SimpleDtc.ViewModels {
         private string _selectedProfile;
         private bool _watchDtc;
 
-        public DataCartridgeViewModel (IEventAggregator eventAggregator, IOptionsService optionsService, IFalconService falconService) {
+        public DataCartridgeViewModel (IEventAggregator eventAggregator, IOptionsService optionsService, IFalconService falconService, IPackagesService packagesService) {
             _optionsService = optionsService;
             _falconService = falconService;
+            _packagesService = packagesService;
+            _eventAggregator = eventAggregator;
 
             eventAggregator.GetEvent<OptionsUpdated> ().Subscribe (OnOptionsUpdated);
             eventAggregator.GetEvent<ProfileUpdated> ().Subscribe (OnProfileUpdated);
@@ -102,6 +116,7 @@ namespace SimpleDtc.ViewModels {
         }
 
         public ICommand QuickExport => GetCommand ("QuickExport", ExecuteQuickExport, () => SelectedProfile != null);
+        public ICommand QuickImport => GetCommand ("QuickImport", ExecuteQuickImport, () => SelectedProfile != null);
         public ICommand CreateTargetPackage => GetCommand ("CreateTargetPackage", ExecuteCreateTargetPackage, () => SelectedProfile != null);
         public ICommand ToggleWatchDtc => GetCommand ("ToggleWatchDtc", () => WatchDtc = !WatchDtc);
 
@@ -176,6 +191,30 @@ namespace SimpleDtc.ViewModels {
         }
 
         private void ExecuteQuickExport () {
+            var package = new TargetPackage {
+                Name = $"{SelectedProfile} Quick Export {DateTime.Now.ToShortDateString ()}",
+                Creator = SelectedProfile,
+                TargetSteerpoints = new List<Steerpoint> (_loadedCartridge.TargetSteerpoints),
+                ThreatSteerpoints = new List<Steerpoint> (_loadedCartridge.ThreatSteerpoints),
+                WeaponTargetPoints = new List<Steerpoint> (_loadedCartridge.WeaponTargetPoints)
+            };
+
+            var export = _packagesService.Export (package, true);
+            Clipboard.SetText (export);
+
+            _eventAggregator.GetEvent<StatusUpdate> ().Publish ("Quick export complete");
+        }
+
+        private void ExecuteQuickImport () {
+            var data = Clipboard.GetText ();
+            var package = _packagesService.Import (data);
+            if (package != null) {
+                _falconService.MergeTargetPackage (SelectedProfile, package);
+                _eventAggregator.GetEvent<StatusUpdate> ().Publish ("Quick import complete");
+            }
+            else {
+                _eventAggregator.GetEvent<StatusUpdate> ().Publish ("Could not quick import package from clipboard");
+            }
         }
 
         private void ExecuteCreateTargetPackage () {

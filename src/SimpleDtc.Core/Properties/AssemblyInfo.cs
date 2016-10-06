@@ -82,8 +82,8 @@ using System.Windows.Markup;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion ("0.1.0.0")]
-[assembly: AssemblyFileVersion ("0.1.0.0")]
+[assembly: AssemblyVersion ("0.0.1.0")]
+[assembly: AssemblyFileVersion ("0.0.1.0")]
 [assembly: XmlnsDefinition ("https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core", "SimpleDtc.Core")]
 [assembly: XmlnsDefinition ("https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core", "SimpleDtc.Core.Controls")]
 [assembly: XmlnsDefinition ("https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core", "SimpleDtc.Core.Converters")]

@@ -40,4 +40,7 @@ namespace SimpleDtc.Core {
 
     public class ProfileUpdated : PubSubEvent<string> {        
     }
+
+    public class StatusUpdate : PubSubEvent<string> {        
+    }
 }

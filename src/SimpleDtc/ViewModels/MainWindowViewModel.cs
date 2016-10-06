@@ -29,20 +29,31 @@
 using System;
 using System.IO;
 using System.Windows;
+using Microsoft.Practices.Prism.PubSubEvents;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SimpleDtc.Core;
 using SimpleDtc.Core.Services;
 
 namespace SimpleDtc.ViewModels {
     public interface IMainWindowViewModel {
+        string Status { get; }
         void ValidateConfiguration ();
     }
 
     internal class MainWindowViewModel : PropertyStateBase, IMainWindowViewModel {
         private readonly IOptionsService _optionsService;
+        private string _status;
 
-        public MainWindowViewModel (IOptionsService optionsService) {
+        public MainWindowViewModel (IEventAggregator eventAggregator, IOptionsService optionsService) {            
             _optionsService = optionsService;
+            Status = String.Empty;
+
+            eventAggregator.GetEvent<StatusUpdate> ().Subscribe (m => Status = $"{DateTime.Now.ToShortTimeString()}: {m}");
+        }
+
+        public string Status {
+            get { return _status; }
+            set { SetProperty (ref _status, value); }
         }
 
         public void ValidateConfiguration () {

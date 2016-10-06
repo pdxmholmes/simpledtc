@@ -10,13 +10,15 @@
                          DataContext="{Binding Data, Source={StaticResource vmProxy}}">
                 <MenuItem Header="Quick Export..." Command="{Binding QuickExport}" />
                 <MenuItem Header="Create Target Package..." Command="{Binding CreateTargetPackage}" />
+                <Separator />
+                <MenuItem Header="Quick Import" Command="{Binding QuickImport}" />
             </ContextMenu>
         </DockPanel.Resources>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <core:MenuButton ToolTip="Target Package Actions"
                                  ContextMenu="{StaticResource TargetPackageMenu}">
-                    <core:FontImage Glyph="{DynamicResource RocketIcon}" Width="24" Height="24" />
+                    <core:FontImage Glyph="{DynamicResource FighterJetIcon}" Width="24" Height="24" />
                 </core:MenuButton>
                 
                 <Separator Margin="5,0,5,0" />

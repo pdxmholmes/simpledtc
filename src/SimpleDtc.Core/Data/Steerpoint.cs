@@ -33,10 +33,11 @@ namespace SimpleDtc.Core.Data {
     public enum SteerpointType {
         Target,
         Threat,
-        Weapon        
+        Weapon
     }
 
     public class Steerpoint {
+        public const string OutputFormat = "0.000000";
         public const string EmptyNote = "Not set";
 
         public int Index { get; set; }
@@ -77,6 +78,10 @@ namespace SimpleDtc.Core.Data {
             }
 
             return point;
+        }
+
+        public override string ToString () {
+            return $"{X.ToString (OutputFormat)},{Y.ToString (OutputFormat)},{Z.ToString (OutputFormat)},{Unknown.ToString (OutputFormat)},{Note}";
         }
 
         private static double GetCoord (string part) {

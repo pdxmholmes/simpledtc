@@ -6,6 +6,9 @@
         Title="SimpleDtc" Height="425" Width="750">
     <DockPanel LastChildFill="True">
         <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Status}" />
+            </StatusBarItem>
         </StatusBar>
         <TabControl>
             <TabItem>
