@@ -2,14 +2,15 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewModels="clr-namespace:SimpleDtc.ViewModels"
-             xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core">
+             xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core"
+             xmlns:fa="http://schemas.fontawesome.io/icons/">
     <DockPanel LastChildFill="True">
         <DockPanel.Resources>
             <core:BindingProxy x:Key="vmProxy" Data="{Binding}" />
             <ContextMenu x:Key="TargetPackageMenu"
                          DataContext="{Binding Data, Source={StaticResource vmProxy}}">
                 <MenuItem Header="Quick Export..." Command="{Binding QuickExport}" />
-                <MenuItem Header="Create Target Package..." Command="{Binding CreateTargetPackage}" />
+                <MenuItem Header="Create Target Package..." Command="{Binding CreateTargetPackage}" IsEnabled="False" />
                 <Separator />
                 <MenuItem Header="Quick Import" Command="{Binding QuickImport}" />
             </ContextMenu>
@@ -18,29 +19,29 @@
             <ToolBar>
                 <core:MenuButton ToolTip="Target Package Actions"
                                  ContextMenu="{StaticResource TargetPackageMenu}">
-                    <core:FontImage Glyph="{DynamicResource FighterJetIcon}" Width="24" Height="24" />
+                    <fa:ImageAwesome Icon="MapPin" Width="18" Height="18" Margin="3" />
                 </core:MenuButton>
-                
+
                 <Separator Margin="5,0,5,0" />
-                
+
                 <TextBlock Text="Profile" Margin="0,0,4,0" VerticalAlignment="Center" />
                 <ComboBox ItemsSource="{Binding AvailableProfiles}" SelectedItem="{Binding SelectedProfile}" Width="175" />
-                
+
                 <Separator Margin="5,0,5,0" />
-                
-                <Button ToolTip="Watch For DTC Changes" Command="{Binding ToggleWatchDtc}">
-                    <core:FontImage Glyph="{DynamicResource CircleIcon}" Width="24" Height="24">
-                        <core:FontImage.Style>
-                            <Style TargetType="core:FontImage">
-                                <Setter Property="Brush" Value="DarkGreen" />
+
+                <Button ToolTip="Watch For DTC Changes" Command="{Binding ToggleWatchDtc}" Visibility="Collapsed">
+                    <fa:ImageAwesome Icon="Circle" Width="18" Height="18" Margin="3">
+                        <fa:ImageAwesome.Style>
+                            <Style TargetType="fa:ImageAwesome">
+                                <Setter Property="Foreground" Value="DarkGreen" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding WatchDtc}" Value="False">
-                                        <Setter Property="Brush" Value="DarkRed" />
+                                        <Setter Property="Foreground" Value="DarkRed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </core:FontImage.Style>
-                    </core:FontImage>
+                        </fa:ImageAwesome.Style>
+                    </fa:ImageAwesome>
                 </Button>
             </ToolBar>
         </ToolBarTray>
@@ -56,23 +57,23 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="viewModels:PointType">
                         <StackPanel Orientation="Horizontal">
-                            <core:FontImage Width="16" Height="16" Margin="0,0,5,0">
-                                <core:FontImage.Style>
-                                    <Style TargetType="core:FontImage">
+                            <fa:ImageAwesome Width="16" Height="16" Margin="0,0,5,0">
+                                <fa:ImageAwesome.Style>
+                                    <Style TargetType="fa:ImageAwesome">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Type}" Value="{x:Static core:SteerpointType.Target}">
-                                                <Setter Property="Glyph" Value="{DynamicResource CircleIcon}" />
+                                                <Setter Property="Icon" Value="Circle" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Type}" Value="{x:Static core:SteerpointType.Threat}">
-                                                <Setter Property="Glyph" Value="{DynamicResource WarningIcon}" />
+                                                <Setter Property="Icon" Value="Warning" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Type}" Value="{x:Static core:SteerpointType.Weapon}">
-                                                <Setter Property="Glyph" Value="{DynamicResource RocketIcon}" />
+                                                <Setter Property="Icon" Value="Rocket" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </core:FontImage.Style>
-                            </core:FontImage>
+                                </fa:ImageAwesome.Style>
+                            </fa:ImageAwesome>
                             <TextBlock Text="{Binding Header}" VerticalAlignment="Center" />
                         </StackPanel>
                     </DataTemplate>

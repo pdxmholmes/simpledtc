@@ -39,6 +39,7 @@ namespace SimpleDtc.Core.Data {
     public class Steerpoint {
         public const string OutputFormat = "0.000000";
         public const string EmptyNote = "Not set";
+        public const double EmptyValue = -1.0;
 
         public int Index { get; set; }
         public double X { get; set; }
@@ -81,7 +82,11 @@ namespace SimpleDtc.Core.Data {
         }
 
         public override string ToString () {
-            return $"{X.ToString (OutputFormat)},{Y.ToString (OutputFormat)},{Z.ToString (OutputFormat)},{Unknown.ToString (OutputFormat)},{Note}";
+            return $"{FormatCoordinate (X)}, {FormatCoordinate (Y)}, {FormatCoordinate (Z)}, {FormatCoordinate (Unknown)}, {Note}";
+        }
+
+        private static string FormatCoordinate (double c) {
+            return c == EmptyValue ? "-1" : c.ToString (OutputFormat);
         }
 
         private static double GetCoord (string part) {

@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FontAwesome.WPF, Version=4.5.0.37524, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FontAwesome.WPF.4.5.0.8\lib\net40\FontAwesome.WPF.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="INIFileParser, Version=2.3.0.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ini-parser.2.3.0\lib\net20\INIFileParser.dll</HintPath>
       <Private>True</Private>
@@ -110,14 +114,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Fonts\Icons.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Themes\FontImage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -129,10 +125,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\GlyphImageSource.cs" />
+    <Compile Include="Behaviors\BindableSelectedItem.cs" />
     <Compile Include="CompositionRoot.cs" />
     <Compile Include="Controls\BindingProxy.cs" />
     <Compile Include="Controls\MenuButton.cs" />
-    <Compile Include="Controls\FontImage.cs" />
     <Compile Include="Controls\ViewPlaceholder.cs" />
     <Compile Include="Converters\NullIsHiddenConverter.cs" />
     <Compile Include="CoreApplication.cs" />
@@ -167,7 +163,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="Fonts\fontawesome-webfont.ttf" />
     <Resource Include="Fonts\Inconsolata.otf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

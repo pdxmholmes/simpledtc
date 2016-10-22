@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SimpleDtc.Views"
              xmlns:core="https://github.com/pdxmholems/simpledtc/schemas/2016/simpledtc.core"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:fa="http://schemas.fontawesome.io/icons/">
     <DockPanel LastChildFill="True">
         <DockPanel.Resources>
             <core:BindingProxy x:Key="vmProxy" Data="{Binding}" />
@@ -21,12 +23,10 @@
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <core:MenuButton x:Name="ImportTargetPackageButton" ToolTip="Import Target Package"
-                                 ContextMenu="{StaticResource ImportMenu}">
-                    <core:FontImage Glyph="{DynamicResource UploadIcon}" Width="24" Height="24" />
+                                 ContextMenu="{StaticResource ImportMenu}" fa:Awesome.Content="Upload">
                 </core:MenuButton>
                 <core:MenuButton x:Name="ExportTargetPackageButton" ToolTip="Export Target Package"
-                                 ContextMenu="{StaticResource ExportMenu}">
-                    <core:FontImage Glyph="{DynamicResource DownloadIcon}" Width="24" Height="24" />
+                                 ContextMenu="{StaticResource ExportMenu}" fa:Awesome.Content="Download">
                 </core:MenuButton>
             </ToolBar>
         </ToolBarTray>
@@ -38,18 +38,21 @@
             </Grid.ColumnDefinitions>
 
             <TreeView Grid.Column="0" ItemsSource="{Binding PackageFolders}">
+                <i:Interaction.Behaviors>
+                    <core:BindableSelectedItem SelectedItem="{Binding SelectedItem}" />
+                </i:Interaction.Behaviors>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Packages}">
                         <HierarchicalDataTemplate.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <core:FontImage Glyph="{DynamicResource RocketIcon}" Width="20" Height="20" />
+                                    <fa:ImageAwesome Icon="Rocket" Height="20" Width="20" />
                                     <TextBlock Text="{Binding Name}" FontSize="14" />
                                 </StackPanel>
                             </DataTemplate>
                         </HierarchicalDataTemplate.ItemTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <core:FontImage Glyph="{DynamicResource FolderIcon}" Width="20" Height="20" />
+                            <fa:ImageAwesome Icon="Folder" Height="20" Width="20" />
                             <TextBlock Text="{Binding Name}" FontSize="14" />
                         </StackPanel>
                     </HierarchicalDataTemplate>

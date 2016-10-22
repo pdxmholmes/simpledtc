@@ -6,7 +6,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/SimpleDtc.Core;component/Fonts/Fonts.xaml" />
-                <ResourceDictionary Source="/SimpleDtc.Core;component/Fonts/Icons.xaml" />
                 <ResourceDictionary Source="/Themes/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

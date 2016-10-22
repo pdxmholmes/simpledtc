@@ -3,8 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/SimpleDtc.Core;component/Fonts/Fonts.xaml" />
-        <ResourceDictionary Source="/SimpleDtc.Core;component/Fonts/Icons.xaml" />
-        <ResourceDictionary Source="/SimpleDtc.Core;component/Themes/FontImage.xaml" />
         <ResourceDictionary Source="/SimpleDtc.Core;component/Themes/MenuButton.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

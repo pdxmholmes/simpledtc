@@ -27,21 +27,41 @@
 #endregion
 
 using System.Windows;
-using System.Windows.Media;
-using FontAwesome.WPF;
-using SimpleDtc.ViewModels;
+using System.Windows.Controls;
+using System.Windows.Interactivity;
 
-namespace SimpleDtc.Views {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindowView : Window {
-        public MainWindowView (IMainWindowViewModel vm) {
-            DataContext = vm;
-            InitializeComponent ();
+namespace SimpleDtc.Core.Behaviors {
+    public class BindableSelectedItem : Behavior<TreeView> {
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register ("SelectedItem", typeof (object), typeof (BindableSelectedItem), new FrameworkPropertyMetadata (null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
 
-            Icon = ImageAwesome.CreateImageSource (FontAwesomeIcon.FighterJet, Brushes.Black);
-            Loaded += (sender, args) => vm.ValidateConfiguration ();
+
+        public object SelectedItem {
+            get { return GetValue (SelectedItemProperty); }
+            set { SetValue (SelectedItemProperty, value); }
+        }
+
+        protected override void OnAttached () {
+            base.OnAttached ();
+
+            AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
+        }
+
+        protected override void OnDetaching () {
+            base.OnDetaching ();
+
+            if (AssociatedObject != null) {
+                AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
+            }
+        }
+
+        private void OnTreeViewSelectedItemChanged (object sender, RoutedPropertyChangedEventArgs<object> e) {
+            SelectedItem = e.NewValue;
+        }
+
+        private static void OnSelectedItemChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e) {
+            var item = e.NewValue as TreeViewItem;
+            item?.SetValue (TreeViewItem.IsSelectedProperty, true);
         }
     }
 }

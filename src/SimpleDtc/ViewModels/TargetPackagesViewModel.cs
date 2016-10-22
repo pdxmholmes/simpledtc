@@ -28,6 +28,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using SimpleDtc.Core;
 using SimpleDtc.Core.Services;
@@ -39,6 +40,7 @@ namespace SimpleDtc.ViewModels {
 
     public interface ITargetPackagesViewModel {
         ITargetPackagesView View { get; set; }
+        object SelectedItem { get; set; }
         bool IsExportMenuOpen { get; set; }
         ICommand ExportTargetPackage { get; }
     }
@@ -57,26 +59,26 @@ namespace SimpleDtc.ViewModels {
     }
 
     internal class TargetPackagesViewModel : PropertyStateBase, ITargetPackagesViewModel {
-        private readonly ObservableCollection<PackageFolderNode> _packageFolders = new ObservableCollection<PackageFolderNode> (new [] {
-            new PackageFolderNode {
-                Name = "Test Folder",
-                Packages = new [] {
-                    new PackageNode { Name = "Test Package" },
-                    new PackageNode { Name = "Test Package" }
-                }
-            }
-        });
+        private readonly ObservableCollection<PackageFolderNode> _packageFolders;
         private IFalconService _falconService;
         private bool _isExportMenuOpen;
-        private IPackageNode _selectedNode;
+        private object _selectedItem;
 
-        public TargetPackagesViewModel (IFalconService falconService) {
+        public TargetPackagesViewModel (IFalconService falconService, IPackagesService packagesService) {
             _falconService = falconService;
+
+            _packageFolders = new ObservableCollection<PackageFolderNode> (
+                packagesService.GetFolders ().Select (f => new PackageFolderNode {
+                    Name = f,
+                    Packages = new ObservableCollection<PackageNode> (packagesService.GetPackages (f).Select (p => new PackageNode {
+                        Name = p
+                    }))
+                }));
         }
 
-        public IPackageNode SelectedNode {
-            get { return _selectedNode; }
-            set { SetProperty (ref _selectedNode, value); }
+        public object SelectedItem {
+            get { return _selectedItem; }
+            set { SetProperty (ref _selectedItem, value); }
         }
 
         public IEnumerable<PackageFolderNode> PackageFolders => _packageFolders;

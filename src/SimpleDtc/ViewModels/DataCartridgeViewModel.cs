@@ -213,7 +213,7 @@ namespace SimpleDtc.ViewModels {
                 _eventAggregator.GetEvent<StatusUpdate> ().Publish ("Quick import complete");
             }
             else {
-                _eventAggregator.GetEvent<StatusUpdate> ().Publish ("Could not quick import package from clipboard");
+                _eventAggregator.GetEvent<StatusUpdate> ().Publish ("Could not quick import package from clipboard (data was probably not a target package)");
             }
         }
 
